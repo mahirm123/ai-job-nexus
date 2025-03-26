@@ -1,9 +1,10 @@
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
 // Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 // Animate elements when they scroll into view
 export const animateOnScroll = (selector: string, options = {}) => {
@@ -127,4 +128,80 @@ export const animateCounter = (
   } else {
     return gsap.to(counter, animationConfig);
   }
+};
+
+// Page transition animation
+export const pageTransition = (
+  container: HTMLElement | null,
+  direction: "in" | "out" = "in"
+) => {
+  if (!container) return;
+  
+  if (direction === "in") {
+    gsap.fromTo(
+      container,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+    );
+  } else {
+    gsap.to(container, {
+      opacity: 0,
+      y: -40,
+      duration: 0.4,
+      ease: "power2.in",
+    });
+  }
+};
+
+// Parallax scroll effect
+export const createParallaxEffect = (
+  selector: string,
+  speedFactor: number = 0.5
+) => {
+  const elements = document.querySelectorAll(selector);
+  
+  elements.forEach((element) => {
+    gsap.to(element, {
+      y: () => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const viewportHeight = window.innerHeight;
+        const scrollDistance = elementPosition - viewportHeight / 2;
+        return -scrollDistance * speedFactor;
+      },
+      ease: "none",
+      scrollTrigger: {
+        trigger: element,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+  });
+};
+
+// Reveal text animation (character by character)
+export const revealText = (
+  element: HTMLElement | null, 
+  duration: number = 0.5, 
+  staggerAmount: number = 0.02
+) => {
+  if (!element) return;
+  
+  // Split text into spans (if not already)
+  if (!element.querySelector('.char')) {
+    const text = element.innerHTML;
+    let html = '';
+    for (let i = 0; i < text.length; i++) {
+      html += `<span class="char">${text[i]}</span>`;
+    }
+    element.innerHTML = html;
+  }
+  
+  gsap.from(element.querySelectorAll('.char'), {
+    opacity: 0,
+    y: 20,
+    stagger: staggerAmount,
+    duration: duration,
+    ease: "power3.out"
+  });
 };
