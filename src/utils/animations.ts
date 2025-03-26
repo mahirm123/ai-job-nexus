@@ -99,28 +99,32 @@ export const animateCounter = (
   element: HTMLElement | null, 
   endValue: number, 
   duration = 2,
-  scrollTrigger = true
+  useScrollTrigger = true
 ) => {
   if (!element) return;
   
   const counter = { value: 0 };
-  
-  const animation = gsap.to(counter, {
+  const animationConfig = {
     value: endValue,
     duration,
     ease: "power2.out",
     onUpdate: () => {
       element.textContent = Math.round(counter.value).toString();
     },
-  });
+  };
   
-  if (scrollTrigger) {
-    animation.scrollTrigger = {
-      trigger: element,
-      start: "top 80%",
-      once: true,
-    };
+  if (useScrollTrigger) {
+    const animation = gsap.to(counter, {
+      ...animationConfig,
+      scrollTrigger: {
+        trigger: element,
+        start: "top 80%",
+        once: true,
+      }
+    });
+    
+    return animation;
+  } else {
+    return gsap.to(counter, animationConfig);
   }
-  
-  return animation;
 };

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { JobCard } from "@/components/jobs/JobCard";
+import { JobCard, JobCardProps } from "@/components/jobs/JobCard";
 import gsap from "gsap";
 
 // Sample job data
@@ -317,7 +316,16 @@ const SearchJobs = () => {
               <div className="space-y-6">
                 {filteredJobs.map((job) => (
                   <div key={job.id} className="job-card">
-                    <JobCard job={job} />
+                    <JobCard 
+                      id={job.id}
+                      title={job.title}
+                      company={job.company}
+                      location={job.location}
+                      salary={job.salary}
+                      tags={job.tags}
+                      logo={job.logo}
+                      postedAt={job.date}
+                    />
                   </div>
                 ))}
               </div>
