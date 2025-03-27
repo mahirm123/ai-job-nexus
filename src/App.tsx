@@ -14,12 +14,18 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Jobs from "./pages/Jobs";
 import JobDetail from "./pages/JobDetail";
+import ApplyJob from "./pages/ApplyJob";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import About from "./pages/About";
 import Employers from "./pages/Employers";
 import SearchJobs from "./pages/SearchJobs";
 import NotFound from "./pages/NotFound";
+
+// Dashboard Pages
+import CandidateDashboard from "./pages/dashboard/CandidateDashboard";
+import RecruiterDashboard from "./pages/dashboard/RecruiterDashboard";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
@@ -51,11 +57,18 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/jobs/:id" element={<JobDetail />} />
+              <Route path="/jobs/:id/apply" element={<ApplyJob />} />
               <Route path="/search" element={<SearchJobs />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/about" element={<About />} />
               <Route path="/employers" element={<Employers />} />
+              
+              {/* Dashboard Routes */}
+              <Route path="/dashboard" element={<CandidateDashboard />} />
+              <Route path="/dashboard/recruiter" element={<RecruiterDashboard />} />
+              <Route path="/dashboard/admin" element={<AdminDashboard />} />
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
