@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -443,7 +442,7 @@ const AdminDashboard = () => {
                             <td className="p-4 align-middle">{company.jobs}</td>
                             <td className="p-4 align-middle">{company.employees}</td>
                             <td className="p-4 align-middle">
-                              <Badge variant={company.status === "Verified" ? "default" : "warning"}>
+                              <Badge variant={company.status === "Verified" ? "default" : "secondary"}>
                                 {company.status}
                               </Badge>
                             </td>
