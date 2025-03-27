@@ -1,30 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  BarChart4,
-  PieChart,
-  Users,
-  Building,
-  Shield,
-  Search,
-  Plus,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  BarChart3,
-  TrendingUp,
-  UserPlus,
-  Briefcase
-} from "lucide-react";
-import { DataTable } from "@/components/dashboard/data-table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { useAuth } from "@/contexts/AuthContext";
+import { BarChart3, Users, Building, Briefcase, ArrowUpRight, PlusCircle, PenLine, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { DataTable, Column } from "@/components/dashboard/data-table";
 
 // Mock data for platform statistics
 const platformStats = [

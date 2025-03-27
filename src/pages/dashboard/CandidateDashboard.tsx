@@ -1,24 +1,25 @@
-
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { DataTable, Column } from "@/components/dashboard/data-table";
 import {
-  BriefcaseBusiness,
-  Calendar,
+  BarChart3,
+  FileCheck,
+  FileX,
   Clock,
-  FileText,
-  MessageSquare,
   Star,
-  ThumbsUp,
-  AlertCircle
+  Eye,
+  Briefcase,
+  CheckCircle,
+  XCircle,
+  FolderArchive,
+  Filter,
+  Download,
+  ArrowUpRight
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 
 // Mock data for applications
 const applications = [
