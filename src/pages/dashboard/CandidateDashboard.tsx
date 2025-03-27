@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { AlertCircle, FileText } from "lucide-react";
 import { AdminHeader } from "@/components/dashboard/admin/AdminHeader";
 import { ApplicationTracker } from "@/components/dashboard/candidate/ApplicationTracker";
-import { InterviewSchedule } from "@/components/dashboard/candidate/InterviewSchedule";
+import { Interview, InterviewSchedule } from "@/components/dashboard/candidate/InterviewSchedule";
 import { SavedJobs } from "@/components/dashboard/candidate/SavedJobs";
 import { MessageCenter } from "@/components/dashboard/candidate/MessageCenter";
 
@@ -98,7 +98,7 @@ const savedJobs = [
   },
 ];
 
-const upcomingInterviews = [
+const upcomingInterviews: Interview[] = [
   {
     id: "int1",
     company: "Global Innovations",

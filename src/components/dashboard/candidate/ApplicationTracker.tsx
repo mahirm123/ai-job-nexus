@@ -36,16 +36,16 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 }) => {
   const navigate = useNavigate();
   
-  const getStatusVariant = (status: string) => {
+  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
       case "Rejected":
         return "destructive";
       case "Interview Scheduled":
         return "default";
       case "Offer Received":
-        return "success";
+        return "secondary";
       case "Assessment":
-        return "warning";
+        return "outline";
       default:
         return "secondary";
     }
