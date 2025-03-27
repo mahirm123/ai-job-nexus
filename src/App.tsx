@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import CandidateDashboard from "./pages/dashboard/CandidateDashboard";
 import RecruiterDashboard from "./pages/dashboard/RecruiterDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import ApplicationDetail from "./pages/dashboard/ApplicationDetail";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
@@ -66,6 +67,7 @@ const App = () => {
               
               {/* Dashboard Routes */}
               <Route path="/dashboard" element={<CandidateDashboard />} />
+              <Route path="/dashboard/applications/:id" element={<ApplicationDetail />} />
               <Route path="/dashboard/recruiter" element={<RecruiterDashboard />} />
               <Route path="/dashboard/admin" element={<AdminDashboard />} />
               

@@ -3,40 +3,17 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Table, 
-  TableHeader, 
-  TableHead, 
-  TableRow, 
-  TableBody, 
-  TableCell 
-} from "@/components/ui/table";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
-import { Calendar } from "@/components/ui/calendar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { 
-  AlertCircle, 
-  FileText, 
-  BriefcaseBusiness, 
-  Calendar as CalendarIcon,
-  MessageSquare, 
-  ThumbsUp, 
-} from "lucide-react";
+import { AlertCircle, FileText } from "lucide-react";
+import { AdminHeader } from "@/components/dashboard/admin/AdminHeader";
+import { ApplicationTracker } from "@/components/dashboard/candidate/ApplicationTracker";
+import { InterviewSchedule } from "@/components/dashboard/candidate/InterviewSchedule";
+import { SavedJobs } from "@/components/dashboard/candidate/SavedJobs";
+import { MessageCenter } from "@/components/dashboard/candidate/MessageCenter";
 
 // Mock data for candidate dashboard
 const applicationData = [
@@ -46,6 +23,7 @@ const applicationData = [
     position: "Frontend Developer",
     appliedDate: "2023-05-12",
     status: "In Review",
+    progress: 40
   },
   {
     id: "app2",
@@ -53,6 +31,7 @@ const applicationData = [
     position: "UI/UX Designer",
     appliedDate: "2023-05-10",
     status: "Interview Scheduled",
+    progress: 80
   },
   {
     id: "app3",
@@ -60,6 +39,7 @@ const applicationData = [
     position: "React Developer",
     appliedDate: "2023-05-05",
     status: "Application Submitted",
+    progress: 20
   },
   {
     id: "app4",
@@ -67,6 +47,7 @@ const applicationData = [
     position: "Full Stack Developer",
     appliedDate: "2023-05-01",
     status: "Assessment",
+    progress: 60
   },
   {
     id: "app5",
@@ -74,6 +55,7 @@ const applicationData = [
     position: "Senior Frontend Engineer",
     appliedDate: "2023-04-28",
     status: "Rejected",
+    progress: 100
   },
 ];
 
@@ -85,6 +67,7 @@ const savedJobs = [
     location: "Remote",
     salary: "$120,000 - $150,000",
     savedDate: "2023-05-15",
+    description: "We're looking for an experienced React developer to join our growing team and help build scalable web applications."
   },
   {
     id: "job2",
@@ -93,6 +76,7 @@ const savedJobs = [
     location: "New York, NY",
     salary: "$90,000 - $110,000",
     savedDate: "2023-05-14",
+    description: "Join our design team to create beautiful, intuitive user interfaces for our cutting-edge products."
   },
   {
     id: "job3",
@@ -101,6 +85,7 @@ const savedJobs = [
     location: "San Francisco, CA",
     salary: "$130,000 - $160,000",
     savedDate: "2023-05-13",
+    description: "Lead our frontend development team and drive best practices across multiple projects."
   },
   {
     id: "job4",
@@ -109,6 +94,7 @@ const savedJobs = [
     location: "Remote",
     salary: "$100,000 - $125,000",
     savedDate: "2023-05-12",
+    description: "Work on cloud-based applications using modern JavaScript frameworks and libraries."
   },
 ];
 
@@ -139,7 +125,7 @@ const messages = [
     from: "Jane Smith",
     company: "Global Innovations",
     date: "2023-05-16",
-    preview: "We'd like to schedule your interview for the UI/UX Designer role.",
+    preview: "We'd like to schedule your interview for the UI/UX Designer role. Please let us know your availability for next week.",
     read: true,
   },
   {
@@ -147,7 +133,7 @@ const messages = [
     from: "Michael Johnson",
     company: "Nexus Software",
     date: "2023-05-15",
-    preview: "Regarding your application for the Full Stack Developer position.",
+    preview: "Regarding your application for the Full Stack Developer position, we're pleased to inform you that you've passed the initial screening.",
     read: false,
   },
   {
@@ -155,7 +141,7 @@ const messages = [
     from: "Sarah Williams",
     company: "Tech Solutions Inc.",
     date: "2023-05-14",
-    preview: "Thank you for your application. We're currently reviewing your qualifications.",
+    preview: "Thank you for your application. We're currently reviewing your qualifications and will get back to you soon.",
     read: false,
   },
 ];
@@ -170,35 +156,13 @@ const CandidateDashboard = () => {
   const interviewsScheduled = upcomingInterviews.length;
   const profileCompletion = 85;
   
-  const viewJob = (jobId: string) => {
-    navigate(`/jobs/${jobId}`);
-  };
-  
-  const applyJob = (jobId: string) => {
-    navigate(`/jobs/${jobId}/apply`);
-  };
-  
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-8 p-6">
-        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div>
-            <h1 className="text-2xl font-bold">Welcome back, {user?.firstName}!</h1>
-            <p className="text-muted-foreground">
-              Here's what's happening with your job search today.
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            {profileCompletion < 100 && (
-              <div className="flex items-center gap-2 rounded-md bg-amber-50 px-3 py-1 text-sm text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
-                <AlertCircle size={16} />
-                Complete your profile
-              </div>
-            )}
-            <Button onClick={() => navigate("/jobs/search")}>Find Jobs</Button>
-          </div>
-        </div>
+        <AdminHeader 
+          title={`Welcome back, ${user?.firstName}!`}
+          subtitle="Here's what's happening with your job search today."
+        />
         
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -210,6 +174,15 @@ const CandidateDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">{profileCompletion}%</div>
               <Progress className="mt-2" value={profileCompletion} />
+              {profileCompletion < 100 && (
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto mt-2 text-xs"
+                  onClick={() => navigate("/dashboard/profile")}
+                >
+                  Complete your profile
+                </Button>
+              )}
             </CardContent>
           </Card>
           
@@ -274,52 +247,10 @@ const CandidateDashboard = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="relative w-full overflow-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Position</TableHead>
-                          <TableHead>Company</TableHead>
-                          <TableHead>Applied Date</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {applicationData.slice(0, 3).map((application) => (
-                          <TableRow key={application.id}>
-                            <TableCell className="font-medium">
-                              {application.position}
-                            </TableCell>
-                            <TableCell>{application.company}</TableCell>
-                            <TableCell>{application.appliedDate}</TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  application.status === "Rejected"
-                                    ? "destructive"
-                                    : application.status === "Interview Scheduled"
-                                    ? "default"
-                                    : "secondary"
-                                }
-                              >
-                                {application.status}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActiveTab("applications")}
-                    >
-                      <FileText className="mr-2 h-4 w-4" />
-                      View All Applications
-                    </Button>
-                  </div>
+                  <ApplicationTracker 
+                    applications={applicationData}
+                    onViewAll={() => setActiveTab("applications")}
+                  />
                 </CardContent>
               </Card>
               
@@ -329,66 +260,11 @@ const CandidateDashboard = () => {
                   <CardDescription>Your scheduled interviews</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div>
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      className="rounded-md border"
-                    />
-                    <div className="mt-4 space-y-4">
-                      {upcomingInterviews.map((interview) => (
-                        <div
-                          key={interview.id}
-                          className="rounded-md border p-3"
-                        >
-                          <div className="flex justify-between">
-                            <div className="font-medium">
-                              {interview.position}
-                            </div>
-                            <Badge>{interview.medium}</Badge>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {interview.company}
-                          </div>
-                          <div className="mt-2 text-sm">
-                            <div className="flex items-center text-muted-foreground">
-                              <CalendarIcon className="mr-1 h-4 w-4" />
-                              {interview.date} at {interview.time}
-                            </div>
-                          </div>
-                          {interview.link && (
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="mt-2 h-auto p-0"
-                              asChild
-                            >
-                              <a
-                                href={interview.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Join Interview
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                      {upcomingInterviews.length === 0 && (
-                        <div className="rounded-md border border-dashed p-6 text-center">
-                          <BriefcaseBusiness className="mx-auto h-8 w-8 text-muted-foreground" />
-                          <h3 className="mt-2 text-lg font-semibold">
-                            No interviews scheduled
-                          </h3>
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            When you have interviews scheduled, they will appear
-                            here.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <InterviewSchedule
+                    interviews={upcomingInterviews}
+                    selectedDate={date}
+                    onDateChange={setDate}
+                  />
                 </CardContent>
               </Card>
             </div>
@@ -401,46 +277,11 @@ const CandidateDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`rounded-md border p-4 ${
-                        !message.read ? "bg-primary/5" : ""
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="font-medium">
-                            {message.from}
-                            {!message.read && (
-                              <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-                                New
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {message.company} • {message.date}
-                          </div>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          <MessageSquare className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className="mt-2 text-sm">{message.preview}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setActiveTab("messages")}
-                  >
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    View All Messages
-                  </Button>
-                </div>
+                <MessageCenter 
+                  messages={messages}
+                  showViewAll={true}
+                  onViewAll={() => setActiveTab("messages")}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -454,53 +295,10 @@ const CandidateDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="relative w-full overflow-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Position</TableHead>
-                        <TableHead>Company</TableHead>
-                        <TableHead>Applied Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {applicationData.map((application) => (
-                        <TableRow key={application.id}>
-                          <TableCell className="font-medium">
-                            {application.position}
-                          </TableCell>
-                          <TableCell>{application.company}</TableCell>
-                          <TableCell>{application.appliedDate}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                application.status === "Rejected"
-                                  ? "destructive"
-                                  : application.status === "Interview Scheduled"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {application.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                            >
-                              <ThumbsUp className="h-4 w-4" />
-                              <span className="sr-only">Follow Up</span>
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                <ApplicationTracker 
+                  applications={applicationData}
+                  showAll={true}
+                />
                 <Separator className="my-4" />
                 <div className="flex justify-between">
                   <Button variant="outline" size="sm">
@@ -524,42 +322,7 @@ const CandidateDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {savedJobs.map((job) => (
-                    <div
-                      key={job.id}
-                      className="rounded-md border p-4"
-                    >
-                      <div className="flex flex-col justify-between space-y-2 sm:flex-row sm:space-y-0">
-                        <div>
-                          <div className="font-medium">{job.position}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {job.company} • {job.location}
-                          </div>
-                          <div className="mt-1 text-sm">
-                            Salary: {job.salary}
-                          </div>
-                        </div>
-                        <div className="flex flex-row sm:flex-col sm:space-y-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="mr-2 sm:mr-0"
-                            onClick={() => viewJob(job.id)}
-                          >
-                            View Details
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => applyJob(job.id)}
-                          >
-                            Apply Now
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <SavedJobs jobs={savedJobs} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -573,53 +336,10 @@ const CandidateDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`rounded-md border p-4 ${
-                        !message.read ? "bg-primary/5" : ""
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="font-medium">
-                            {message.from}
-                            {!message.read && (
-                              <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-                                New
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {message.company} • {message.date}
-                          </div>
-                        </div>
-                        <div className="flex">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="mr-2"
-                          >
-                            Mark as {message.read ? "Unread" : "Read"}
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <MessageSquare className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <p className="mt-2 text-sm">{message.preview}</p>
-                      <div className="mt-4">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                        >
-                          View Full Conversation
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <MessageCenter 
+                  messages={messages}
+                  showViewAll={true}
+                />
               </CardContent>
             </Card>
           </TabsContent>
