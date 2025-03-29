@@ -8,11 +8,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import gsap from "gsap";
 
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { register: registerUser, isLoading: authLoading } = useAuth();
   const formRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -120,15 +122,16 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // This is a mock registration - will be replaced with actual auth implementation
-      setTimeout(() => {
-        toast({
-          title: "Registration successful",
-          description: "Welcome to AI Job Nexus!",
-        });
-        navigate("/");
-      }, 1500);
+      await registerUser({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName
+      });
+      
+      navigate("/dashboard");
     } catch (error) {
+      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
         description: "There was a problem creating your account.",
@@ -232,9 +235,9 @@ const Register = () => {
                 <Button 
                   type="submit" 
                   className="w-full animate-fade-up"
-                  disabled={isLoading}
+                  disabled={isLoading || authLoading}
                 >
-                  {isLoading ? "Creating Account..." : "Create Account"}
+                  {isLoading || authLoading ? "Creating Account..." : "Create Account"}
                 </Button>
                 <div className="text-center text-sm animate-fade-up">
                   Already have an account?{" "}

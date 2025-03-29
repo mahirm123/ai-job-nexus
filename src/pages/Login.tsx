@@ -9,11 +9,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import gsap from "gsap";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login, isLoading: authLoading } = useAuth();
   const formRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -90,15 +92,10 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      // This is a mock login - will be replaced with actual auth implementation
-      setTimeout(() => {
-        toast({
-          title: "Login successful",
-          description: "Welcome back!",
-        });
-        navigate("/");
-      }, 1500);
+      await login(formData.email, formData.password);
+      navigate("/dashboard");
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
         description: "Please check your credentials and try again.",
@@ -176,9 +173,9 @@ const Login = () => {
                 <Button 
                   type="submit" 
                   className="w-full animate-fade-up"
-                  disabled={isLoading}
+                  disabled={isLoading || authLoading}
                 >
-                  {isLoading ? "Signing in..." : "Sign In"}
+                  {isLoading || authLoading ? "Signing in..." : "Sign In"}
                 </Button>
                 <div className="text-center text-sm animate-fade-up">
                   Don't have an account?{" "}
