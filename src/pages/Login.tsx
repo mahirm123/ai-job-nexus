@@ -11,6 +11,26 @@ import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import gsap from "gsap";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+// Demo credentials
+const demoUsers = [
+  {
+    role: "candidate",
+    email: "candidate@example.com",
+    password: "password123"
+  },
+  {
+    role: "employer",
+    email: "employer@example.com",
+    password: "password123"
+  },
+  {
+    role: "admin",
+    email: "admin@example.com",
+    password: "admin123"
+  }
+];
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,6 +38,7 @@ const Login = () => {
   const { login, isLoading: authLoading } = useAuth();
   const formRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -93,6 +114,10 @@ const Login = () => {
     
     try {
       await login(formData.email, formData.password);
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
@@ -103,6 +128,18 @@ const Login = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRoleSelect = (role: string) => {
+    setSelectedRole(role);
+    const demoUser = demoUsers.find(user => user.role === role);
+    if (demoUser) {
+      setFormData(prev => ({
+        ...prev,
+        email: demoUser.email,
+        password: demoUser.password
+      }));
     }
   };
 
@@ -121,6 +158,24 @@ const Login = () => {
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
+                {/* Demo credentials selector */}
+                <div className="space-y-2 animate-fade-up">
+                  <Label htmlFor="demo-select">Quick access with demo accounts</Label>
+                  <Select value={selectedRole} onValueChange={handleRoleSelect}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a demo account" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="candidate">Job Seeker (Candidate)</SelectItem>
+                      <SelectItem value="employer">Recruiter (Employer)</SelectItem>
+                      <SelectItem value="admin">Administrator</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Select a role to auto-fill demo credentials
+                  </p>
+                </div>
+                
                 <div className="space-y-2 animate-fade-up">
                   <Label htmlFor="email">Email</Label>
                   <Input 

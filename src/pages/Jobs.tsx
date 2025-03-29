@@ -10,6 +10,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Filter, MapPin, Briefcase } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageSwitcher";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
+import { useToast } from "@/hooks/use-toast";
 
 // Sample data for jobs
 const jobsData: JobCardProps[] = [
@@ -125,10 +134,12 @@ const industries = ["Technology", "Finance", "Healthcare", "Education", "Manufac
 const Jobs = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   
   const initialQuery = searchParams.get("query") || "";
   const initialLocation = searchParams.get("location") || "";
+  const initialPage = parseInt(searchParams.get("page") || "1", 10);
   
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [locationQuery, setLocationQuery] = useState(initialLocation);
@@ -139,8 +150,13 @@ const Jobs = () => {
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [sortType, setSortType] = useState("relevance");
   
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [jobsPerPage] = useState(5);
+  
   // Filtered jobs state
   const [filteredJobs, setFilteredJobs] = useState(jobsData);
+  const [displayedJobs, setDisplayedJobs] = useState<JobCardProps[]>([]);
 
   // Apply filters
   useEffect(() => {
@@ -176,6 +192,15 @@ const Jobs = () => {
       filtered = filtered.filter(job => 
         selectedExperienceLevels.some(level => 
           job.tags.some(tag => tag.toLowerCase().includes(level.toLowerCase()))
+        )
+      );
+    }
+    
+    // Industry filter
+    if (selectedIndustries.length > 0) {
+      filtered = filtered.filter(job => 
+        selectedIndustries.some(industry => 
+          job.tags.some(tag => tag.toLowerCase().includes(industry.toLowerCase()))
         )
       );
     }
@@ -230,13 +255,30 @@ const Jobs = () => {
     const params = new URLSearchParams();
     if (searchQuery) params.set("query", searchQuery);
     if (locationQuery) params.set("location", locationQuery);
+    params.set("page", currentPage.toString());
     setSearchParams(params);
     
   }, [searchQuery, locationQuery, selectedJobTypes, selectedExperienceLevels, selectedIndustries, salaryRange, sortType]);
 
+  // Update displayed jobs when filtered jobs or pagination changes
+  useEffect(() => {
+    const indexOfLastJob = currentPage * jobsPerPage;
+    const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+    const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+    
+    // Reset to page 1 if current page is now invalid
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+      return;
+    }
+    
+    setDisplayedJobs(filteredJobs.slice(indexOfFirstJob, indexOfLastJob));
+  }, [filteredJobs, currentPage, jobsPerPage]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // Search is applied through the useEffect when state changes
+    setCurrentPage(1); // Reset to first page on new search
   };
 
   const toggleJobType = (type: string) => {
@@ -245,6 +287,7 @@ const Jobs = () => {
         ? prev.filter(t => t !== type) 
         : [...prev, type]
     );
+    setCurrentPage(1); // Reset to first page on filter change
   };
 
   const toggleExperienceLevel = (level: string) => {
@@ -253,6 +296,7 @@ const Jobs = () => {
         ? prev.filter(l => l !== level) 
         : [...prev, level]
     );
+    setCurrentPage(1); // Reset to first page on filter change
   };
 
   const toggleIndustry = (industry: string) => {
@@ -261,6 +305,7 @@ const Jobs = () => {
         ? prev.filter(i => i !== industry) 
         : [...prev, industry]
     );
+    setCurrentPage(1); // Reset to first page on filter change
   };
 
   const applyFilters = () => {
@@ -268,6 +313,10 @@ const Jobs = () => {
     if (window.innerWidth < 1024) {
       setIsFilterVisible(false);
     }
+    toast({
+      title: "Filters applied",
+      description: "Your job search has been updated",
+    });
   };
 
   const resetFilters = () => {
@@ -278,7 +327,15 @@ const Jobs = () => {
     setSelectedIndustries([]);
     setSalaryRange([80, 200]);
     setSortType("relevance");
+    setCurrentPage(1);
+    toast({
+      title: "Filters reset",
+      description: "All filters have been cleared",
+    });
   };
+
+  // Calculate total pages for pagination
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -456,8 +513,8 @@ const Jobs = () => {
               </div>
               
               <div className="space-y-4">
-                {filteredJobs.length > 0 ? (
-                  filteredJobs.map((job, index) => (
+                {displayedJobs.length > 0 ? (
+                  displayedJobs.map((job, index) => (
                     <JobCard
                       key={job.id}
                       {...job}
@@ -475,13 +532,63 @@ const Jobs = () => {
                 )}
               </div>
               
+              {/* Improved Pagination */}
               {filteredJobs.length > 0 && (
-                <div className="mt-8 flex justify-center">
-                  <Button variant="outline" className="mr-2">Previous</Button>
-                  <Button variant="outline" className="mx-1 bg-primary text-white">1</Button>
-                  <Button variant="outline" className="mx-1">2</Button>
-                  <Button variant="outline" className="mx-1">3</Button>
-                  <Button variant="outline" className="ml-2">Next</Button>
+                <div className="mt-8">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (currentPage > 1) setCurrentPage(currentPage - 1);
+                          }}
+                          className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        // Show pages around current page
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        
+                        return (
+                          <PaginationItem key={pageNum}>
+                            <PaginationLink 
+                              href="#" 
+                              isActive={pageNum === currentPage}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage(pageNum);
+                              }}
+                            >
+                              {pageNum}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                          }}
+                          className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
               )}
             </div>
