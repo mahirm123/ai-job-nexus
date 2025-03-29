@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import * as authApi from '@/api/auth';
 
 export interface User {
   id: string;
@@ -46,42 +47,55 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check localStorage for existing session
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Failed to parse stored user data:', error);
-        localStorage.removeItem('user');
-      }
+    // Check localStorage for existing token
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchUserProfile();
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const userData = await authApi.getProfile();
+      setUser({
+        id: userData._id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        role: userData.role,
+        profileImage: userData.profileImage
+      });
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      localStorage.removeItem('token');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     
     try {
-      // This is a mock API call - replace with real authentication later
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 1000));
+      const response = await authApi.login({ email, password });
       
-      // Mock user for development
-      const mockUser: User = {
-        id: '1',
-        email,
-        firstName: 'John',
-        lastName: 'Doe',
-        role: 'user',
-        profileImage: '/placeholder.svg',
-      };
+      // Save token to localStorage
+      localStorage.setItem('token', response.token);
       
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
+      setUser({
+        id: response.user.id,
+        email: response.user.email,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName,
+        role: response.user.role,
+        profileImage: response.user.profileImage
+      });
       
       toast({
         title: "Login successful",
-        description: `Welcome back, ${mockUser.firstName}!`,
+        description: `Welcome back, ${response.user.firstName}!`,
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -105,24 +119,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // This is a mock API call - replace with real registration later
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 1500));
+      const response = await authApi.register(userData);
       
-      // Mock user creation
-      const newUser: User = {
-        id: Date.now().toString(),
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        role: 'user',
-      };
+      // Save token to localStorage
+      localStorage.setItem('token', response.token);
       
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      setUser({
+        id: response.user.id,
+        email: response.user.email,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName,
+        role: response.user.role,
+        profileImage: response.user.profileImage
+      });
       
       toast({
         title: "Registration successful",
-        description: `Welcome to AI Job Nexus, ${newUser.firstName}!`,
+        description: `Welcome to AI Job Nexus, ${response.user.firstName}!`,
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -139,7 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = (): void => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
@@ -150,19 +163,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 1000));
+      const response = await authApi.updateProfile({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        profileImage: data.profileImage
+      });
       
-      if (user) {
-        const updatedUser = { ...user, ...data };
-        setUser(updatedUser);
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        
-        toast({
-          title: "Profile updated",
-          description: "Your profile has been successfully updated",
-        });
-      }
+      setUser(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          firstName: response.user.firstName,
+          lastName: response.user.lastName,
+          profileImage: response.user.profileImage
+        };
+      });
+      
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated",
+      });
     } catch (error) {
       console.error('Profile update error:', error);
       toast({

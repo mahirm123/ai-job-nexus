@@ -1,69 +1,77 @@
-# Welcome to your Lovable project
 
-## Project info
+# AI Job Portal with MongoDB
 
-**URL**: https://lovable.dev/projects/88de3075-b27e-4d78-a479-4342aa8ded40
+This is a full-stack job portal application with MongoDB as the database backend.
 
-## How can I edit this code?
+## Requirements
 
-There are several ways of editing your application.
+- Node.js
+- MongoDB (local installation or MongoDB Atlas)
+- npm or yarn
 
-**Use Lovable**
+## Getting Started
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/88de3075-b27e-4d78-a479-4342aa8ded40) and start prompting.
+### Backend Setup
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Make sure MongoDB is running on your machine or you have a MongoDB Atlas connection string
+2. Update the `.env` file with your MongoDB connection string
+3. Navigate to the server directory and install dependencies:
 
-**Use your preferred IDE**
+```bash
+cd server
+npm install
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+4. Start the server:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```bash
+npm start
+```
 
-Follow these steps:
+The server will run on http://localhost:5000
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Frontend Setup
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1. In the root directory, install dependencies:
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+2. Start the development server:
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will run on http://localhost:5173
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Features
 
-**Use GitHub Codespaces**
+- User authentication (register, login, profile management)
+- Job listings with search and filter functionality
+- Job applications
+- Employer dashboard
+- Admin dashboard
+- MongoDB database integration
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## API Endpoints
 
-## What technologies are used for this project?
+### Authentication
+- POST /api/users/register - Register a new user
+- POST /api/users/login - Login user
+- GET /api/users/profile - Get user profile
+- PUT /api/users/profile - Update user profile
 
-This project is built with .
+### Jobs
+- GET /api/jobs - Get all jobs with filters
+- GET /api/jobs/:id - Get job by ID
+- POST /api/jobs - Create a new job
+- POST /api/jobs/:id/save - Save job for a user
+- DELETE /api/jobs/:id/save - Unsave job for a user
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/88de3075-b27e-4d78-a479-4342aa8ded40) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+### Applications
+- POST /api/applications - Submit a job application
+- GET /api/applications/user - Get applications for a user
+- GET /api/applications/job/:jobId - Get applications for a job
+- PUT /api/applications/:id - Update application status
