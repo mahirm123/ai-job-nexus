@@ -1,7 +1,8 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+// Use environment variables with a fallback for the API URL
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -21,6 +22,19 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor to handle common errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error);
+    if (error.response?.status === 401) {
+      // Handle unauthorized errors - could redirect to login or clear token
+      localStorage.removeItem('token');
+    }
     return Promise.reject(error);
   }
 );

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import * as authApi from '@/api/auth';
@@ -41,9 +40,37 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+const mockUsers = {
+  'candidate@example.com': {
+    id: 'mock-candidate-id',
+    email: 'candidate@example.com',
+    firstName: 'John',
+    lastName: 'Candidate',
+    role: 'user' as const,
+    profileImage: null
+  },
+  'employer@example.com': {
+    id: 'mock-employer-id',
+    email: 'employer@example.com',
+    firstName: 'Jane',
+    lastName: 'Employer',
+    role: 'employer' as const,
+    profileImage: null
+  },
+  'admin@example.com': {
+    id: 'mock-admin-id',
+    email: 'admin@example.com',
+    firstName: 'Admin',
+    lastName: 'User',
+    role: 'admin' as const,
+    profileImage: null
+  }
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [useMockAuth, setUseMockAuth] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -60,16 +87,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const userData = await authApi.getProfile();
       setUser({
-        id: userData._id,
+        id: userData._id || userData.id,
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
         role: userData.role,
         profileImage: userData.profileImage
       });
+      setUseMockAuth(false);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
+      
+      // Try to extract user info from token
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Decode the token to get user info (simplified JWT decoding)
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          
+          const { id, role } = JSON.parse(jsonPayload);
+          
+          // Find matching mock user
+          const mockUser = Object.values(mockUsers).find(m => 
+            m.id === id || m.role === role
+          );
+          
+          if (mockUser) {
+            setUser(mockUser);
+            setUseMockAuth(true);
+            console.log('Using mock authentication');
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Token parsing error:', err);
+      }
+      
       localStorage.removeItem('token');
+      setUseMockAuth(false);
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
+      // Try API login first
       const response = await authApi.login({ email, password });
       
       // Save token to localStorage
@@ -93,18 +153,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         profileImage: response.user.profileImage
       });
       
+      setUseMockAuth(false);
+      
       toast({
         title: "Login successful",
         description: `Welcome back, ${response.user.firstName}!`,
       });
     } catch (error) {
       console.error('Login error:', error);
-      toast({
-        title: "Login failed",
-        description: "Invalid email or password",
-        variant: "destructive",
-      });
-      throw error;
+      
+      // Fallback to mock auth for demo if API fails
+      const mockUser = mockUsers[email];
+      if (mockUser && (password === 'password123' || (email === 'admin@example.com' && password === 'admin123'))) {
+        // Create a mock token
+        const mockToken = btoa(JSON.stringify({ id: mockUser.id, role: mockUser.role }));
+        localStorage.setItem('token', mockToken);
+        
+        setUser(mockUser);
+        setUseMockAuth(true);
+        
+        toast({
+          title: "Demo login successful",
+          description: `Welcome to demo mode, ${mockUser.firstName}!`,
+        });
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Invalid email or password",
+          variant: "destructive",
+        });
+        throw error;
+      }
     } finally {
       setIsLoading(false);
     }
