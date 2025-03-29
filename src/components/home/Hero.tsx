@@ -3,8 +3,23 @@ import React from "react";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 export const Hero = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handlePopularSearch = (term: string) => {
+    navigate(`/search?query=${encodeURIComponent(term)}`);
+  };
+
   return (
     <div className="relative min-h-[90vh] flex items-center">
       {/* Background elements */}
@@ -25,25 +40,55 @@ export const Hero = () => {
           </p>
 
           <div className="animate-slide-up animation-delay-200 relative max-w-2xl mx-auto mb-12">
-            <div className="glass-card rounded-full flex items-center overflow-hidden p-1.5 shadow-lg">
+            <form onSubmit={handleSearch} className="glass-card rounded-full flex items-center overflow-hidden p-1.5 shadow-lg">
               <Input 
                 placeholder="Search for jobs, skills, or companies..." 
                 className="flex-1 border-none bg-transparent text-foreground placeholder:text-foreground/50 focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Button className="rounded-full" size="lg">
+              <Button type="submit" className="rounded-full" size="lg">
                 <Search size={18} className="mr-2" />
                 Search
               </Button>
-            </div>
+            </form>
           </div>
 
           <div className="animate-slide-up animation-delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground">
             <span>Popular searches:</span>
             <div className="flex flex-wrap justify-center gap-2">
-              <Button variant="outline" size="sm" className="rounded-full">Machine Learning</Button>
-              <Button variant="outline" size="sm" className="rounded-full">Data Science</Button>
-              <Button variant="outline" size="sm" className="rounded-full">Software Engineer</Button>
-              <Button variant="outline" size="sm" className="rounded-full">Remote</Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full"
+                onClick={() => handlePopularSearch("Machine Learning")}
+              >
+                Machine Learning
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full"
+                onClick={() => handlePopularSearch("Data Science")}
+              >
+                Data Science
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full"
+                onClick={() => handlePopularSearch("Software Engineer")}
+              >
+                Software Engineer
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full"
+                onClick={() => handlePopularSearch("Remote")}
+              >
+                Remote
+              </Button>
             </div>
           </div>
         </div>

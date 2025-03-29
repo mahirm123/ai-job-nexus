@@ -1,5 +1,5 @@
-import React from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { JobCardProps } from "@/components/jobs/JobCard";
+import { useLanguage } from "@/components/ui/LanguageSwitcher";
+import { useAuth } from "@/contexts/AuthContext";
 
-// Using the same job data from Jobs.tsx
 const jobsData: JobCardProps[] = [
   {
     id: "1",
@@ -46,10 +47,8 @@ const jobsData: JobCardProps[] = [
     postedAt: "3 days ago",
     featured: true,
   },
-  // ... other jobs data would be here in a real application
 ];
 
-// Extended job details that aren't in the card view
 const jobDetails: Record<string, {
   description: string;
   responsibilities: string[];
@@ -113,19 +112,45 @@ const jobDetails: Record<string, {
 
 const JobDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+  const { isAuthenticated } = useAuth();
   const job = jobsData.find(job => job.id === id);
   const details = id ? jobDetails[id] : undefined;
+  const [isSaved, setIsSaved] = useState(false);
   
-  const handleApply = () => {
-    toast.success("Your application has been submitted!", {
-      description: "We'll notify you when the recruiter responds."
-    });
+  const handleApplyClick = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to apply for this job", {
+        description: "You'll be redirected to the login page",
+        duration: 5000,
+      });
+      navigate(`/login?returnUrl=/jobs/${id}/apply`);
+      return;
+    }
+    
+    navigate(`/jobs/${id}/apply`);
   };
   
   const handleSaveJob = () => {
-    toast.success("Job saved to your profile", {
-      description: "You can view all saved jobs in your dashboard."
-    });
+    if (!isAuthenticated) {
+      toast.error("Please login to save jobs", {
+        description: "You need to be logged in to save jobs",
+      });
+      return;
+    }
+    
+    setIsSaved(!isSaved);
+    
+    if (!isSaved) {
+      toast.success("Job saved to your profile", {
+        description: "You can view all saved jobs in your dashboard."
+      });
+    } else {
+      toast.success("Job removed from saved jobs", {
+        description: "The job has been removed from your saved jobs."
+      });
+    }
   };
   
   const handleShare = () => {
@@ -168,9 +193,7 @@ const JobDetail = () => {
             </Button>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
-                {/* Job Header */}
                 <Card className="p-6 animate-fade-in">
                   <div className="flex items-start gap-4">
                     <div className="w-16 h-16 rounded-md overflow-hidden bg-secondary flex items-center justify-center shrink-0">
@@ -185,13 +208,23 @@ const JobDetail = () => {
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <h1 className="text-2xl font-bold">{job.title}</h1>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" onClick={handleSaveJob} className="flex items-center gap-1">
-                            <Bookmark size={16} />
-                            <span className="hidden sm:inline">Save</span>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleSaveJob} 
+                            className={`flex items-center gap-1 ${isSaved ? 'bg-secondary' : ''}`}
+                          >
+                            <Bookmark size={16} className={isSaved ? 'fill-current' : ''} />
+                            <span className="hidden sm:inline">{t("save.job")}</span>
                           </Button>
-                          <Button variant="outline" size="sm" onClick={handleShare} className="flex items-center gap-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleShare} 
+                            className="flex items-center gap-1"
+                          >
                             <Share size={16} />
-                            <span className="hidden sm:inline">Share</span>
+                            <span className="hidden sm:inline">{t("share.job")}</span>
                           </Button>
                         </div>
                       </div>
@@ -220,7 +253,6 @@ const JobDetail = () => {
                   </div>
                 </Card>
                 
-                {/* Job Description */}
                 <Card className="p-6 animate-fade-in [animation-delay:100ms]">
                   <h2 className="text-xl font-semibold mb-4">Job Description</h2>
                   <p className="mb-6">{details.description}</p>
@@ -247,19 +279,18 @@ const JobDetail = () => {
                   </ul>
                 </Card>
                 
-                {/* Company Info */}
                 <Card className="p-6 animate-fade-in [animation-delay:200ms]">
                   <h2 className="text-xl font-semibold mb-4">About {job.company}</h2>
                   <p>{details.companyDescription}</p>
                 </Card>
               </div>
               
-              {/* Sidebar */}
               <div className="space-y-6">
-                {/* Apply Now Card */}
                 <Card className="p-6 animate-fade-in [animation-delay:300ms]">
                   <h2 className="text-xl font-semibold mb-4">Apply for this job</h2>
-                  <Button onClick={handleApply} className="w-full mb-4">Apply Now</Button>
+                  <Button onClick={handleApplyClick} className="w-full mb-4">
+                    {t("apply.now")}
+                  </Button>
                   <p className="text-sm text-muted-foreground mb-4">
                     This application will be sent directly to the hiring manager.
                   </p>
@@ -280,7 +311,6 @@ const JobDetail = () => {
                   </div>
                 </Card>
                 
-                {/* Job Tags Card */}
                 <Card className="p-6 animate-fade-in [animation-delay:400ms]">
                   <h2 className="text-lg font-semibold mb-4">Skills & Technologies</h2>
                   <div className="flex flex-wrap gap-2">
@@ -292,7 +322,6 @@ const JobDetail = () => {
                   </div>
                 </Card>
                 
-                {/* Similar Jobs Card */}
                 <Card className="p-6 animate-fade-in [animation-delay:500ms]">
                   <h2 className="text-lg font-semibold mb-4">Similar Jobs</h2>
                   <div className="space-y-4">

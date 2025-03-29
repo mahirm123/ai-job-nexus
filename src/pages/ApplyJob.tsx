@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -33,8 +32,8 @@ import {
   DollarSign 
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/components/ui/LanguageSwitcher";
 
-// Using the same job data from Jobs.tsx and JobDetail.tsx
 const jobsData = [
   {
     id: "1",
@@ -60,7 +59,6 @@ const jobsData = [
   },
 ];
 
-// Application form schema
 const applicationSchema = z.object({
   fullName: z.string().min(3, { message: "Full name must be at least 3 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -81,9 +79,9 @@ const ApplyJob = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { t } = useLanguage();
   const job = jobsData.find(job => job.id === id);
   
-  // Initialize form with react-hook-form
   const form = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
     defaultValues: {
@@ -98,36 +96,30 @@ const ApplyJob = () => {
     },
   });
   
-  // Form submission handler
   const onSubmit = (data: ApplicationFormValues) => {
     console.log("Application submitted:", data);
     
-    // Simulate successful application
     toast.success("Application submitted successfully!", {
       description: "We'll notify you about the next steps soon."
     });
     
-    // Redirect to job details page after successful submission
     setTimeout(() => {
       navigate(`/jobs/${id}`);
     }, 2000);
   };
   
-  // Redirect if not authenticated
   React.useEffect(() => {
     if (!isAuthenticated) {
       toast.error("Please login to apply for jobs", {
         description: "You'll be redirected to the login page."
       });
       
-      // Redirect to login with return URL
       setTimeout(() => {
         navigate(`/login?returnUrl=/jobs/${id}/apply`);
       }, 2000);
     }
   }, [isAuthenticated, navigate, id]);
   
-  // Redirect if job not found
   if (!job) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -158,7 +150,6 @@ const ApplyJob = () => {
         </Button>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Application Form */}
           <div className="lg:col-span-2">
             <h1 className="text-2xl font-bold mb-6">Apply for {job.title}</h1>
             
@@ -282,7 +273,6 @@ const ApplyJob = () => {
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
-                                  // Handle file upload
                                   field.onChange(file);
                                 }
                               }} 
@@ -339,13 +329,12 @@ const ApplyJob = () => {
                     )}
                   />
                   
-                  <Button type="submit" className="w-full">Submit Application</Button>
+                  <Button type="submit" className="w-full">{t("apply.now")}</Button>
                 </form>
               </Form>
             </Card>
           </div>
           
-          {/* Job Summary */}
           <div className="lg:col-span-1">
             <Card className="p-6 mb-6 sticky top-24">
               <h2 className="text-lg font-semibold mb-4">Job Summary</h2>
