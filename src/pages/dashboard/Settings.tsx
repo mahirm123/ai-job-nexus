@@ -18,8 +18,8 @@ import {
   TabsList,
   TabsTrigger 
 } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { 
-  Switch,
   Form,
   FormControl,
   FormDescription,
