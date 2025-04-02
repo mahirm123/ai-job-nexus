@@ -22,6 +22,7 @@ import About from "./pages/About";
 import Employers from "./pages/Employers";
 import SearchJobs from "./pages/SearchJobs";
 import NotFound from "./pages/NotFound";
+import PostJob from "./pages/PostJob"; // Add import for the new page
 
 // Dashboard Pages
 import CandidateDashboard from "./pages/dashboard/CandidateDashboard";
@@ -86,6 +87,13 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/about" element={<About />} />
       <Route path="/employers" element={<Employers />} />
+      
+      {/* Add the new Post Job route */}
+      <Route path="/post-job" element={
+        <RoleProtectedRoute allowedRoles={['employer', 'admin']}>
+          <PostJob />
+        </RoleProtectedRoute>
+      } />
       
       {/* Dashboard Routes */}
       <Route path="/dashboard" element={

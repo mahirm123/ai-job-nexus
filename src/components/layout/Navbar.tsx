@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, User, LogOut, Settings } from "lucide-react";
+import { Menu, X, User, LogOut, Settings, BriefcaseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,6 +43,9 @@ export const Navbar = () => {
     ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` 
     : "U";
 
+  // Check if user is employer or admin to show/hide post job button
+  const canPostJob = user && (user.role === 'employer' || user.role === 'admin');
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -81,6 +84,19 @@ export const Navbar = () => {
               >
                 About
               </Link>
+              
+              {/* Post Job button for employers/admins */}
+              {canPostJob && (
+                <Button size="sm" variant="outline" asChild>
+                  <Link
+                    to="/post-job"
+                    className="flex items-center gap-2"
+                  >
+                    <BriefcaseIcon className="h-4 w-4" />
+                    Post Job
+                  </Link>
+                </Button>
+              )}
             </div>
 
             <div className="flex items-center space-x-3">
@@ -112,6 +128,12 @@ export const Navbar = () => {
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </DropdownMenuItem>
+                    {canPostJob && (
+                      <DropdownMenuItem onClick={() => navigate("/post-job")}>
+                        <BriefcaseIcon className="mr-2 h-4 w-4" />
+                        <span>Post Job</span>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
@@ -171,6 +193,18 @@ export const Navbar = () => {
           >
             About
           </Link>
+          
+          {/* Post Job link for employers/admins */}
+          {canPostJob && (
+            <Link
+              to="/post-job"
+              className="py-2 text-foreground/80 hover:text-foreground flex items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <BriefcaseIcon className="h-4 w-4" />
+              Post Job
+            </Link>
+          )}
           
           <hr className="border-border" />
           

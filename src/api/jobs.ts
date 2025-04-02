@@ -29,6 +29,7 @@ export const createJob = async (jobData: {
   tags: string[];
   type: string;
 }) => {
+  console.log('Creating job with data:', jobData);
   const response = await api.post('/jobs', jobData);
   return response.data;
 };
@@ -40,5 +41,10 @@ export const saveJob = async (jobId: string) => {
 
 export const unsaveJob = async (jobId: string) => {
   const response = await api.delete(`/jobs/${jobId}/save`);
+  return response.data;
+};
+
+export const getUserCompanies = async () => {
+  const response = await api.get('/companies/my-companies');
   return response.data;
 };
