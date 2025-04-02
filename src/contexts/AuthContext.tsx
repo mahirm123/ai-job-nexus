@@ -9,6 +9,7 @@ export interface User {
   lastName: string;
   role: 'user' | 'employer' | 'admin';
   profileImage?: string;
+  company?: string; // Added the company property to the User interface
 }
 
 interface AuthContextType {
