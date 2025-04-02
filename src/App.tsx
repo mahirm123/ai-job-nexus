@@ -22,13 +22,21 @@ import About from "./pages/About";
 import Employers from "./pages/Employers";
 import SearchJobs from "./pages/SearchJobs";
 import NotFound from "./pages/NotFound";
-import PostJob from "./pages/PostJob"; // Add import for the new page
+import PostJob from "./pages/PostJob";
 
 // Dashboard Pages
 import CandidateDashboard from "./pages/dashboard/CandidateDashboard";
 import RecruiterDashboard from "./pages/dashboard/RecruiterDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import ApplicationDetail from "./pages/dashboard/ApplicationDetail";
+
+// New Employer Dashboard Pages
+import JobPostings from "./pages/dashboard/JobPostings";
+import ApplicantsPage from "./pages/dashboard/ApplicantsPage";
+import MessagesPage from "./pages/dashboard/MessagesPage";
+import CompanyProfile from "./pages/dashboard/CompanyProfile";
+import Analytics from "./pages/dashboard/Analytics";
+import Settings from "./pages/dashboard/Settings";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
@@ -88,7 +96,6 @@ const AppRoutes = () => {
       <Route path="/about" element={<About />} />
       <Route path="/employers" element={<Employers />} />
       
-      {/* Add the new Post Job route */}
       <Route path="/post-job" element={
         <RoleProtectedRoute allowedRoles={['employer', 'admin']}>
           <PostJob />
@@ -106,11 +113,45 @@ const AppRoutes = () => {
           <ApplicationDetail />
         </ProtectedRoute>
       } />
+      
+      {/* Employer Dashboard Routes */}
       <Route path="/dashboard/recruiter" element={
         <RoleProtectedRoute allowedRoles={['employer', 'admin']}>
           <RecruiterDashboard />
         </RoleProtectedRoute>
       } />
+      <Route path="/dashboard/jobs" element={
+        <RoleProtectedRoute allowedRoles={['employer', 'admin']}>
+          <JobPostings />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/applicants" element={
+        <RoleProtectedRoute allowedRoles={['employer', 'admin']}>
+          <ApplicantsPage />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/messages" element={
+        <ProtectedRoute>
+          <MessagesPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/company" element={
+        <RoleProtectedRoute allowedRoles={['employer', 'admin']}>
+          <CompanyProfile />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/analytics" element={
+        <RoleProtectedRoute allowedRoles={['employer', 'admin']}>
+          <Analytics />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/settings" element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      } />
+      
+      {/* Admin Dashboard Routes */}
       <Route path="/dashboard/admin" element={
         <RoleProtectedRoute allowedRoles={['admin']}>
           <AdminDashboard />
