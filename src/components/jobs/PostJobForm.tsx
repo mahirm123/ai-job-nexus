@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { BriefcaseIcon, CalendarIcon, MapPinIcon, BanknotesIcon, TagIcon } from "lucide-react";
+import { BriefcaseIcon, CalendarIcon, MapPinIcon, BanknoteIcon, TagIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { createJob } from "@/api/jobs";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,7 +55,7 @@ const PostJobForm: React.FC = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      company: user?.companyId || "", // Use companyId if available in user object
+      company: user?.company || "", // Changed from companyId to company to match User type
       location: "",
       description: "",
       requirements: "",
@@ -208,7 +208,7 @@ const PostJobForm: React.FC = () => {
                   <FormControl>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
-                        <BanknotesIcon className="h-5 w-5" />
+                        <BanknoteIcon className="h-5 w-5" />
                       </div>
                       <Input className="pl-10" placeholder="e.g. $80,000 - $100,000" {...field} />
                     </div>
