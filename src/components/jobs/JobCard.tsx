@@ -1,9 +1,12 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Bookmark, MapPin, Building, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { saveJob, unsaveJob } from "@/api/jobs";
+import { toast } from "sonner";
+import { useLanguage } from "@/components/ui/LanguageSwitcher";
 
 export interface JobCardProps {
   id: string;
@@ -30,6 +33,30 @@ export const JobCard = ({
   featured = false,
   className,
 }: JobCardProps) => {
+  const { t } = useLanguage();
+  const [saved, setSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      if (saved) {
+        await unsaveJob(id);
+        setSaved(false);
+        toast.success(t("job.unsaved"));
+      } else {
+        await saveJob(id);
+        setSaved(true);
+        toast.success(t("job.saved"));
+      }
+    } catch (error) {
+      toast.error(t("error.general"));
+      console.error("Error saving/unsaving job:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div 
       className={cn(
@@ -57,9 +84,18 @@ export const JobCard = ({
               </Link>
               <p className="text-muted-foreground text-sm mt-1 mb-2">{company}</p>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-              <Bookmark size={18} />
-              <span className="sr-only">Save job</span>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 shrink-0" 
+              onClick={handleSave}
+              disabled={isLoading}
+            >
+              <Bookmark 
+                size={18} 
+                className={saved ? "fill-primary text-primary" : ""} 
+              />
+              <span className="sr-only">{t("save.job")}</span>
             </Button>
           </div>
           
@@ -95,8 +131,8 @@ export const JobCard = ({
       </div>
       
       <div className="mt-4 pt-4 border-t border-border flex items-center justify-end">
-        <Button asChild size="sm">
-          <Link to={`/jobs/${id}`}>View Details</Link>
+        <Button asChild size="sm" className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+          <Link to={`/jobs/${id}`}>{t("apply.now")}</Link>
         </Button>
       </div>
     </div>
