@@ -1,60 +1,37 @@
 
-import React, { useState, createContext, useContext, ReactNode } from "react";
-import { Globe } from "lucide-react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
-export type Language = {
+interface Language {
   code: string;
   name: string;
   flag: string;
-};
+}
 
-export const languages: Language[] = [
+interface LanguageContextType {
+  language: string;
+  setLanguage: (language: string) => void;
+  t: (key: string) => string;
+}
+
+const languages: Language[] = [
   { code: "en", name: "English", flag: "🇺🇸" },
   { code: "es", name: "Español", flag: "🇪🇸" },
-  { code: "zh", name: "中文", flag: "🇨🇳" },
+  { code: "fr", name: "Français", flag: "🇫🇷" },
+  { code: "de", name: "Deutsch", flag: "🇩🇪" },
 ];
 
-type LanguageContextType = {
-  currentLanguage: Language;
-  changeLanguage: (language: Language) => void;
-  t: (key: string) => string;
-};
-
-// Extended translation storage with more keys for the entire website
-const translations: Record<string, Record<string, string>> = {
+// Define translations
+const translations: { [key: string]: { [key: string]: string } } = {
   en: {
-    "search.placeholder": "Search for jobs, skills, or companies...",
-    "apply.now": "Apply Now",
-    "save.job": "Save",
-    "share.job": "Share",
-    "job.saved": "Job saved successfully",
-    "job.unsaved": "Job removed from saved list",
-    "error.general": "An error occurred. Please try again.",
-    "jobs.heading": "Find Your Perfect AI & Tech Job",
-    "jobs.subheading": "Browse through hundreds of opportunities from leading companies in the AI and tech industry.",
-    "jobs.hideFilters": "Hide Filters",
-    "jobs.showFilters": "Show Advanced Filters",
-    "jobs.filters": "Filters",
-    "jobs.reset": "Reset",
-    "jobs.applyFilters": "Apply Filters",
-    "dashboard.jobs": "Job Postings",
-    "dashboard.applicants": "Applicants",
-    "dashboard.messages": "Messages",
-    "dashboard.profile": "Profile",
-    "dashboard.analytics": "Analytics",
-    "dashboard.settings": "Settings",
-    "dashboard.createJob": "Create New Job",
-    "theme.light": "Light Mode",
-    "theme.dark": "Dark Mode",
-    "theme.system": "System Theme",
     "nav.home": "Home",
     "nav.jobs": "Jobs",
     "nav.employers": "Employers",
@@ -62,32 +39,124 @@ const translations: Record<string, Record<string, string>> = {
     "nav.login": "Login",
     "nav.register": "Register",
     "nav.dashboard": "Dashboard",
+    "nav.logout": "Logout",
+    
+    "jobs.position": "Position",
+    "jobs.company": "Company",
+    "jobs.location": "Location",
+    "jobs.salary": "Salary",
+    "jobs.remote": "Remote",
+    "jobs.onsite": "On-site",
+    "jobs.hybrid": "Hybrid",
+    "jobs.fullTime": "Full Time",
+    "jobs.partTime": "Part Time",
+    "jobs.contract": "Contract",
+    "jobs.applyNow": "Apply Now",
+    "jobs.markFavorite": "Mark as Favorite",
+    "jobs.removeSaved": "Remove from Saved",
+    
+    "common.search": "Search",
+    "common.filter": "Filter",
+    "common.sort": "Sort",
+    "common.filterBy": "Filter by",
+    "common.sortBy": "Sort by",
+    "common.newest": "Newest",
+    "common.oldest": "Oldest",
+    "common.highestSalary": "Highest Salary",
+    "common.alphabetical": "Alphabetical",
+    "common.actions": "Actions",
+    "common.viewDetails": "View Details",
+    "common.pickDate": "Pick a date",
+    "common.savedOn": "Saved On",
+    "common.openMenu": "Open Menu",
+    "common.save": "Save",
+    "common.cancel": "Cancel",
+    "common.upload": "Upload",
+    "common.download": "Download",
+    
+    "theme.light": "Light",
+    "theme.dark": "Dark",
+    "theme.system": "System",
+    
+    "profile.myProfile": "My Profile",
+    "profile.manageProfile": "Manage your profile details and settings",
+    "profile.information": "Information",
+    "profile.settings": "Settings",
+    "profile.personalInfo": "Personal Information",
+    "profile.basicInfo": "Your basic profile information",
+    "profile.edit": "Edit",
+    "profile.editProfile": "Edit Profile",
+    "profile.editProfileDesc": "Update your profile information",
+    "profile.uploadPhoto": "Upload Photo",
+    "profile.location": "Location",
+    "profile.phone": "Phone",
+    "profile.website": "Website",
+    "profile.availability": "Availability",
+    "profile.skills": "Skills",
+    "profile.skillsDescription": "Your professional skills and expertise",
+    "profile.editSkills": "Edit Skills",
+    "profile.editSkillsDesc": "Add or remove skills from your profile",
+    "profile.experience": "Experience",
+    "profile.experienceDescription": "Your professional experience",
+    "profile.editExperience": "Edit Experience",
+    "profile.editExperienceDesc": "Add or update your professional experience",
+    "profile.addExperience": "Add Experience",
+    "profile.education": "Education",
+    "profile.educationDescription": "Your educational background",
+    "profile.editEducation": "Edit Education",
+    "profile.editEducationDesc": "Add or update your educational information",
+    "profile.addEducation": "Add Education",
+    "profile.resume": "Resume",
+    "profile.resumeDescription": "Your professional resume",
+    "profile.upload": "Upload",
+    "profile.uploadResume": "Upload Resume",
+    "profile.uploadResumeDesc": "Upload or update your resume",
+    "profile.dragFiles": "Drag and drop files here, or click to browse",
+    "profile.supportedFormats": "Supported formats: PDF, DOCX (Max 5MB)",
+    "profile.selectFiles": "Select Files",
+    "profile.resumeNotice": "Your resume will be shared with employers when you apply for jobs",
+    
+    "settings.preferences": "Preferences",
+    "settings.preferencesDesc": "Manage your account preferences",
+    "settings.language": "Language",
+    "settings.languageDesc": "Select your preferred language",
+    "settings.selectLanguage": "Select Language",
+    "settings.theme": "Theme",
+    "settings.themeDesc": "Choose your preferred theme",
+    "settings.selectTheme": "Select Theme",
+    "settings.notifications": "Notifications",
+    "settings.notificationsDesc": "Manage how you receive notifications",
+    "settings.jobAlerts": "Job Alerts",
+    "settings.jobAlertsDesc": "Receive notifications for new job postings matching your criteria",
+    "settings.applicationUpdates": "Application Updates",
+    "settings.applicationUpdatesDesc": "Receive updates about your job applications",
+    "settings.messageNotifications": "Message Notifications",
+    "settings.messageNotificationsDesc": "Receive notifications when you get new messages",
+    "settings.marketingEmails": "Marketing Emails",
+    "settings.marketingEmailsDesc": "Receive promotional emails and newsletters",
+    "settings.privacy": "Privacy",
+    "settings.privacyDesc": "Control your privacy settings",
+    "settings.profileVisibility": "Profile Visibility",
+    "settings.profileVisibilityDesc": "Make your profile visible to employers",
+    "settings.shareActivity": "Share Activity",
+    "settings.shareActivityDesc": "Share your job application activity with your network",
+    "settings.allowMessages": "Allow Messages",
+    "settings.allowMessagesDesc": "Allow employers to message you directly",
+    "settings.dangerZone": "Danger Zone",
+    "settings.dangerZoneDesc": "Permanently delete your account or log out",
+    "settings.deleteAccount": "Delete Account",
+    "settings.deleteAccountDesc": "Permanently delete your account and all your data",
+    "settings.delete": "Delete",
+    "settings.confirmDeleteTitle": "Are you sure?",
+    "settings.confirmDeleteDesc": "This action cannot be undone. This will permanently delete your account and remove all your data from our servers.",
+    "settings.confirmDelete": "Yes, delete my account",
+    "settings.logout": "Log Out",
+    "settings.logoutDesc": "Log out from your account on this device",
+    
+    "savedJobs.title": "Saved Jobs",
+    "savedJobs.subtitle": "View and manage your saved job listings",
   },
   es: {
-    "search.placeholder": "Buscar trabajos, habilidades o empresas...",
-    "apply.now": "Solicitar ahora",
-    "save.job": "Guardar",
-    "share.job": "Compartir",
-    "job.saved": "Trabajo guardado con éxito",
-    "job.unsaved": "Trabajo eliminado de la lista guardada",
-    "error.general": "Ocurrió un error. Por favor, inténtalo de nuevo.",
-    "jobs.heading": "Encuentra tu Trabajo Perfecto en IA y Tecnología",
-    "jobs.subheading": "Explora cientos de oportunidades de empresas líderes en la industria de IA y tecnología.",
-    "jobs.hideFilters": "Ocultar Filtros",
-    "jobs.showFilters": "Mostrar Filtros Avanzados",
-    "jobs.filters": "Filtros",
-    "jobs.reset": "Restablecer",
-    "jobs.applyFilters": "Aplicar Filtros",
-    "dashboard.jobs": "Publicaciones de Empleo",
-    "dashboard.applicants": "Candidatos",
-    "dashboard.messages": "Mensajes",
-    "dashboard.profile": "Perfil",
-    "dashboard.analytics": "Análisis",
-    "dashboard.settings": "Configuración",
-    "dashboard.createJob": "Crear Nuevo Empleo",
-    "theme.light": "Modo Claro",
-    "theme.dark": "Modo Oscuro",
-    "theme.system": "Tema del Sistema",
     "nav.home": "Inicio",
     "nav.jobs": "Empleos",
     "nav.employers": "Empleadores",
@@ -95,114 +164,182 @@ const translations: Record<string, Record<string, string>> = {
     "nav.login": "Iniciar Sesión",
     "nav.register": "Registrarse",
     "nav.dashboard": "Panel",
+    "nav.logout": "Cerrar Sesión",
+    
+    "jobs.position": "Puesto",
+    "jobs.company": "Empresa",
+    "jobs.location": "Ubicación",
+    "jobs.salary": "Salario",
+    "jobs.remote": "Remoto",
+    "jobs.onsite": "Presencial",
+    "jobs.hybrid": "Híbrido",
+    "jobs.fullTime": "Tiempo Completo",
+    "jobs.partTime": "Tiempo Parcial",
+    "jobs.contract": "Contrato",
+    "jobs.applyNow": "Aplicar Ahora",
+    "jobs.markFavorite": "Marcar como Favorito",
+    "jobs.removeSaved": "Quitar de Guardados",
+    
+    "common.search": "Buscar",
+    "common.filter": "Filtrar",
+    "common.sort": "Ordenar",
+    "common.filterBy": "Filtrar por",
+    "common.sortBy": "Ordenar por",
+    "common.newest": "Más Reciente",
+    "common.oldest": "Más Antiguo",
+    "common.highestSalary": "Mayor Salario",
+    "common.alphabetical": "Alfabético",
+    "common.actions": "Acciones",
+    "common.viewDetails": "Ver Detalles",
+    "common.pickDate": "Elegir fecha",
+    "common.savedOn": "Guardado El",
+    "common.openMenu": "Abrir Menú",
+    "common.save": "Guardar",
+    "common.cancel": "Cancelar",
+    "common.upload": "Subir",
+    "common.download": "Descargar",
+    
+    "theme.light": "Claro",
+    "theme.dark": "Oscuro",
+    "theme.system": "Sistema",
+    
+    "profile.myProfile": "Mi Perfil",
+    "profile.manageProfile": "Gestiona tus datos de perfil y configuración",
+    "profile.information": "Información",
+    "profile.settings": "Configuración",
+    "profile.personalInfo": "Información Personal",
+    "profile.basicInfo": "Tu información básica de perfil",
+    "profile.edit": "Editar",
+    "profile.editProfile": "Editar Perfil",
+    "profile.editProfileDesc": "Actualiza tu información de perfil",
+    "profile.uploadPhoto": "Subir Foto",
+    "profile.location": "Ubicación",
+    "profile.phone": "Teléfono",
+    "profile.website": "Sitio Web",
+    "profile.availability": "Disponibilidad",
+    "profile.skills": "Habilidades",
+    "profile.skillsDescription": "Tus habilidades y experiencia profesional",
+    "profile.editSkills": "Editar Habilidades",
+    "profile.editSkillsDesc": "Añadir o eliminar habilidades de tu perfil",
+    "profile.experience": "Experiencia",
+    "profile.experienceDescription": "Tu experiencia profesional",
+    "profile.editExperience": "Editar Experiencia",
+    "profile.editExperienceDesc": "Añadir o actualizar tu experiencia profesional",
+    "profile.addExperience": "Añadir Experiencia",
+    "profile.education": "Educación",
+    "profile.educationDescription": "Tu formación académica",
+    "profile.editEducation": "Editar Educación",
+    "profile.editEducationDesc": "Añadir o actualizar tu información educativa",
+    "profile.addEducation": "Añadir Educación",
+    "profile.resume": "Currículum",
+    "profile.resumeDescription": "Tu currículum profesional",
+    "profile.upload": "Subir",
+    "profile.uploadResume": "Subir Currículum",
+    "profile.uploadResumeDesc": "Subir o actualizar tu currículum",
+    "profile.dragFiles": "Arrastra y suelta archivos aquí, o haz clic para navegar",
+    "profile.supportedFormats": "Formatos soportados: PDF, DOCX (Máx 5MB)",
+    "profile.selectFiles": "Seleccionar Archivos",
+    "profile.resumeNotice": "Tu currículum será compartido con los empleadores cuando solicites empleos",
+    
+    "settings.preferences": "Preferencias",
+    "settings.preferencesDesc": "Gestiona las preferencias de tu cuenta",
+    "settings.language": "Idioma",
+    "settings.languageDesc": "Selecciona tu idioma preferido",
+    "settings.selectLanguage": "Seleccionar Idioma",
+    "settings.theme": "Tema",
+    "settings.themeDesc": "Elige tu tema preferido",
+    "settings.selectTheme": "Seleccionar Tema",
+    "settings.notifications": "Notificaciones",
+    "settings.notificationsDesc": "Gestiona cómo recibes las notificaciones",
+    "settings.jobAlerts": "Alertas de Empleo",
+    "settings.jobAlertsDesc": "Recibir notificaciones de nuevas ofertas de empleo que coincidan con tus criterios",
+    "settings.applicationUpdates": "Actualizaciones de Solicitudes",
+    "settings.applicationUpdatesDesc": "Recibir actualizaciones sobre tus solicitudes de empleo",
+    "settings.messageNotifications": "Notificaciones de Mensajes",
+    "settings.messageNotificationsDesc": "Recibir notificaciones cuando recibas nuevos mensajes",
+    "settings.marketingEmails": "Correos de Marketing",
+    "settings.marketingEmailsDesc": "Recibir correos promocionales y boletines",
+    "settings.privacy": "Privacidad",
+    "settings.privacyDesc": "Controla tu configuración de privacidad",
+    "settings.profileVisibility": "Visibilidad del Perfil",
+    "settings.profileVisibilityDesc": "Hacer tu perfil visible para los empleadores",
+    "settings.shareActivity": "Compartir Actividad",
+    "settings.shareActivityDesc": "Compartir tu actividad de solicitud de empleo con tu red",
+    "settings.allowMessages": "Permitir Mensajes",
+    "settings.allowMessagesDesc": "Permitir que los empleadores te envíen mensajes directamente",
+    "settings.dangerZone": "Zona de Peligro",
+    "settings.dangerZoneDesc": "Eliminar permanentemente tu cuenta o cerrar sesión",
+    "settings.deleteAccount": "Eliminar Cuenta",
+    "settings.deleteAccountDesc": "Eliminar permanentemente tu cuenta y todos tus datos",
+    "settings.delete": "Eliminar",
+    "settings.confirmDeleteTitle": "¿Estás seguro?",
+    "settings.confirmDeleteDesc": "Esta acción no se puede deshacer. Esto eliminará permanentemente tu cuenta y eliminará todos tus datos de nuestros servidores.",
+    "settings.confirmDelete": "Sí, eliminar mi cuenta",
+    "settings.logout": "Cerrar Sesión",
+    "settings.logoutDesc": "Cerrar sesión en tu cuenta en este dispositivo",
+    
+    "savedJobs.title": "Empleos Guardados",
+    "savedJobs.subtitle": "Ver y gestionar tus ofertas de empleo guardadas",
   },
-  zh: {
-    "search.placeholder": "搜索工作、技能或公司...",
-    "apply.now": "立即申请",
-    "save.job": "保存",
-    "share.job": "分享",
-    "job.saved": "工作已成功保存",
-    "job.unsaved": "工作已从保存列表中删除",
-    "error.general": "发生错误。请再试一次。",
-    "jobs.heading": "找到您理想的AI和科技工作",
-    "jobs.subheading": "浏览AI和科技行业领先公司的数百个机会。",
-    "jobs.hideFilters": "隐藏筛选",
-    "jobs.showFilters": "显示高级筛选",
-    "jobs.filters": "筛选条件",
-    "jobs.reset": "重置",
-    "jobs.applyFilters": "应用筛选",
-    "dashboard.jobs": "职位发布",
-    "dashboard.applicants": "申请人",
-    "dashboard.messages": "消息",
-    "dashboard.profile": "个人资料",
-    "dashboard.analytics": "分析",
-    "dashboard.settings": "设置",
-    "dashboard.createJob": "创建新工作",
-    "theme.light": "浅色模式",
-    "theme.dark": "深色模式",
-    "theme.system": "系统主题",
-    "nav.home": "首页",
-    "nav.jobs": "工作",
-    "nav.employers": "雇主",
-    "nav.about": "关于",
-    "nav.login": "登录",
-    "nav.register": "注册",
-    "nav.dashboard": "仪表板",
-  },
+  // Add other translations as needed
 };
 
 const LanguageContext = createContext<LanguageContextType>({
-  currentLanguage: languages[0],
-  changeLanguage: () => {},
-  t: (key: string) => key,
+  language: "en",
+  setLanguage: () => {},
+  t: () => "",
 });
 
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(() => {
-    // Try to get saved language from localStorage, default to English
-    const savedLanguage = localStorage.getItem('preferredLanguage');
-    if (savedLanguage) {
-      const language = languages.find(lang => lang.code === savedLanguage);
-      return language || languages[0];
-    }
-    return languages[0];
+  const [language, setLanguage] = useState<string>(() => {
+    // Try to get saved language from localStorage, default to "en"
+    return localStorage.getItem('language') || "en";
   });
 
-  const changeLanguage = (language: Language) => {
-    setCurrentLanguage(language);
-    // Save language preference to localStorage
-    localStorage.setItem('preferredLanguage', language.code);
-    
-    // Update document language attribute for accessibility
-    document.documentElement.lang = language.code;
-    
-    // Notify user
-    toast.success(`Language changed to ${language.name}`, {
-      description: `The interface will now display in ${language.name}`,
-      duration: 3000,
-    });
-  };
-
-  // Initialize document language on first render
-  React.useEffect(() => {
-    document.documentElement.lang = currentLanguage.code;
-  }, [currentLanguage.code]);
-
+  // Translation function
   const t = (key: string): string => {
-    return translations[currentLanguage.code]?.[key] || key;
+    return translations[language]?.[key] || key;
   };
+
+  // Save language to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ currentLanguage, changeLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
 };
 
 export const LanguageSwitcher = () => {
-  const { currentLanguage, changeLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
+  
+  const currentLanguage = languages.find((lang) => lang.code === language) || languages[0];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 hover:bg-accent hover:text-accent-foreground transition-colors">
-          <Globe size={18} className="text-foreground/80" />
-          <span className="sr-only">Toggle language</span>
+        <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full">
+          <span className="text-lg">{currentLanguage.flag}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40 bg-popover animate-scale-in">
-        {languages.map((language) => (
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Select Language</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {languages.map((lang) => (
           <DropdownMenuItem
-            key={language.code}
-            onClick={() => changeLanguage(language)}
-            className={`flex items-center gap-2 cursor-pointer ${
-              currentLanguage.code === language.code ? "bg-accent text-accent-foreground" : ""
+            key={lang.code}
+            className={`flex items-center ${
+              language === lang.code ? "bg-accent text-accent-foreground" : ""
             }`}
+            onClick={() => setLanguage(lang.code)}
           >
-            <span className="text-base">{language.flag}</span>
-            <span>{language.name}</span>
+            <span className="mr-2 text-lg">{lang.flag}</span>
+            <span>{lang.name}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

@@ -30,6 +30,8 @@ import CandidateDashboard from "./pages/dashboard/CandidateDashboard";
 import RecruiterDashboard from "./pages/dashboard/RecruiterDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import ApplicationDetail from "./pages/dashboard/ApplicationDetail";
+import ProfilePage from "./pages/dashboard/ProfilePage";
+import SavedJobsPage from "./pages/dashboard/SavedJobsPage";
 
 // New Employer Dashboard Pages
 import JobPostings from "./pages/dashboard/JobPostings";
@@ -107,6 +109,16 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={
         <ProtectedRoute>
           <CandidateDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/profile" element={
+        <ProtectedRoute>
+          <ProfilePage />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/saved" element={
+        <ProtectedRoute>
+          <SavedJobsPage />
         </ProtectedRoute>
       } />
       <Route path="/dashboard/applications/:id" element={
