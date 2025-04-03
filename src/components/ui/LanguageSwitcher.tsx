@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +28,6 @@ const languages: Language[] = [
   { code: "de", name: "Deutsch", flag: "🇩🇪" },
 ];
 
-// Define translations
 const translations: { [key: string]: { [key: string]: string } } = {
   en: {
     "nav.home": "Home",
@@ -145,7 +143,7 @@ const translations: { [key: string]: { [key: string]: string } } = {
     "settings.dangerZone": "Danger Zone",
     "settings.dangerZoneDesc": "Permanently delete your account or log out",
     "settings.deleteAccount": "Delete Account",
-    "settings.deleteAccountDesc": "Permanently delete your account and all your data",
+    "settings.deleteAccountDesc": "Permanently delete your account and all your data from our servers.",
     "settings.delete": "Delete",
     "settings.confirmDeleteTitle": "Are you sure?",
     "settings.confirmDeleteDesc": "This action cannot be undone. This will permanently delete your account and remove all your data from our servers.",
@@ -155,6 +153,29 @@ const translations: { [key: string]: { [key: string]: string } } = {
     
     "savedJobs.title": "Saved Jobs",
     "savedJobs.subtitle": "View and manage your saved job listings",
+    
+    "applications.myApplications": "My Applications",
+    "applications.trackApplications": "Track your job applications",
+    "applications.jobApplications": "Job Applications",
+    "applications.trackAndManage": "Track and manage your job applications",
+    "applications.searchApplications": "Search applications...",
+    "applications.filterByStatus": "Filter by status",
+    "applications.allStatuses": "All Statuses",
+    "applications.pending": "Pending",
+    "applications.accepted": "Accepted",
+    "applications.rejected": "Rejected",
+    "applications.interview": "Interview",
+    "applications.company": "Company",
+    "applications.position": "Position",
+    "applications.appliedDate": "Applied Date",
+    "applications.status": "Status",
+    "applications.actions": "Actions",
+    "applications.viewDetails": "View Details",
+    "applications.downloadResume": "Download Resume",
+    "applications.downloadingResume": "Downloading your resume...",
+    "applications.exportToCSV": "Export to CSV",
+    "applications.noApplicationsFound": "No applications found.",
+    "applications.additionalFilters": "Additional filters",
   },
   es: {
     "nav.home": "Inicio",
@@ -280,6 +301,29 @@ const translations: { [key: string]: { [key: string]: string } } = {
     
     "savedJobs.title": "Empleos Guardados",
     "savedJobs.subtitle": "Ver y gestionar tus ofertas de empleo guardadas",
+    
+    "applications.myApplications": "Mis Aplicaciones",
+    "applications.trackApplications": "Seguimiento de tus solicitudes de empleo",
+    "applications.jobApplications": "Solicitudes de Empleo",
+    "applications.trackAndManage": "Seguimiento y gestión de tus solicitudes",
+    "applications.searchApplications": "Buscar solicitudes...",
+    "applications.filterByStatus": "Filtrar por estado",
+    "applications.allStatuses": "Todos los Estados",
+    "applications.pending": "Pendiente",
+    "applications.accepted": "Aceptada",
+    "applications.rejected": "Rechazada",
+    "applications.interview": "Entrevista",
+    "applications.company": "Empresa",
+    "applications.position": "Puesto",
+    "applications.appliedDate": "Fecha de Solicitud",
+    "applications.status": "Estado",
+    "applications.actions": "Acciones",
+    "applications.viewDetails": "Ver Detalles",
+    "applications.downloadResume": "Descargar CV",
+    "applications.downloadingResume": "Descargando tu CV...",
+    "applications.exportToCSV": "Exportar a CSV",
+    "applications.noApplicationsFound": "No se encontraron solicitudes.",
+    "applications.additionalFilters": "Filtros adicionales",
   },
   // Add other translations as needed
 };
