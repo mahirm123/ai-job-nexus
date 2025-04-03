@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -308,11 +307,14 @@ const Jobs = () => {
     setCurrentPage(1); // Reset to first page on filter change
   };
 
+  // Modified applyFilters function to ensure it works properly
   const applyFilters = () => {
     // All filters are applied through the useEffect
     if (window.innerWidth < 1024) {
       setIsFilterVisible(false);
     }
+    // Force the filter effect to run by triggering a state update
+    setSortType(prev => prev === "relevance" ? "relevance_" : "relevance");
     toast({
       title: "Filters applied",
       description: "Your job search has been updated",
@@ -347,10 +349,10 @@ const Jobs = () => {
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <h1 className="text-3xl font-bold tracking-tight mb-4">
-                Find Your Perfect AI & Tech Job
+                {t("jobs.heading")}
               </h1>
               <p className="text-muted-foreground mb-6">
-                Browse through hundreds of opportunities from leading companies in the AI and tech industry.
+                {t("jobs.subheading")}
               </p>
               
               <form onSubmit={handleSearch} className="glass-card rounded-lg p-4 flex flex-col md:flex-row gap-4">
@@ -381,7 +383,7 @@ const Jobs = () => {
                 onClick={() => setIsFilterVisible(!isFilterVisible)}
               >
                 <Filter size={16} />
-                {isFilterVisible ? "Hide Filters" : "Show Advanced Filters"}
+                {isFilterVisible ? t("jobs.hideFilters") : t("jobs.showFilters")}
               </Button>
             </div>
           </div>
@@ -395,10 +397,10 @@ const Jobs = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="font-medium flex items-center gap-2">
                     <Filter size={18} />
-                    Filters
+                    {t("jobs.filters")}
                   </h2>
                   <Button variant="ghost" size="sm" onClick={resetFilters}>
-                    Reset
+                    {t("jobs.reset")}
                   </Button>
                 </div>
                 
@@ -484,7 +486,9 @@ const Jobs = () => {
                     </div>
                   </div>
                   
-                  <Button className="w-full" onClick={applyFilters}>Apply Filters</Button>
+                  <Button className="w-full" onClick={applyFilters}>
+                    {t("jobs.applyFilters")}
+                  </Button>
                 </div>
               </div>
             </div>
