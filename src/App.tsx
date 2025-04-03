@@ -177,7 +177,9 @@ const AppRoutes = () => {
   );
 };
 
+// Fixed App component - moved the useEffect hook inside the component body
 const App = () => {
+  // GSAP setup moved inside the component function
   useEffect(() => {
     // Setup smooth scrolling for the entire page
     gsap.config({ nullTargetWarn: false });
