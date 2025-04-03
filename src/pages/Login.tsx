@@ -1,17 +1,14 @@
 
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import LoginForm from "@/components/auth/LoginForm";
+import DemoAccountSelector from "@/components/auth/DemoAccountSelector";
 import gsap from "gsap";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Demo credentials
 const demoUsers = [
@@ -156,90 +153,21 @@ const Login = () => {
                 Enter your credentials to access your account
               </CardDescription>
             </CardHeader>
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
-                {/* Demo credentials selector */}
-                <div className="space-y-2 animate-fade-up">
-                  <Label htmlFor="demo-select">Quick access with demo accounts</Label>
-                  <Select value={selectedRole} onValueChange={handleRoleSelect}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a demo account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="candidate">Job Seeker (Candidate)</SelectItem>
-                      <SelectItem value="employer">Recruiter (Employer)</SelectItem>
-                      <SelectItem value="admin">Administrator</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Select a role to auto-fill demo credentials
-                  </p>
-                </div>
-                
-                <div className="space-y-2 animate-fade-up">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    name="email"
-                    type="email" 
-                    placeholder="name@example.com" 
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={errors.email ? "border-destructive" : ""}
-                  />
-                  {errors.email && (
-                    <p className="text-destructive text-sm">{errors.email}</p>
-                  )}
-                </div>
-                <div className="space-y-2 animate-fade-up">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <Input 
-                    id="password"
-                    name="password" 
-                    type="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={errors.password ? "border-destructive" : ""}
-                  />
-                  {errors.password && (
-                    <p className="text-destructive text-sm">{errors.password}</p>
-                  )}
-                </div>
-                <div className="flex items-center space-x-2 animate-fade-up">
-                  <Checkbox 
-                    id="remember" 
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onCheckedChange={(checked) => 
-                      setFormData(prev => ({ ...prev, rememberMe: checked === true }))
-                    }
-                  />
-                  <Label htmlFor="remember" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Remember me
-                  </Label>
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col space-y-4">
-                <Button 
-                  type="submit" 
-                  className="w-full animate-fade-up"
-                  disabled={isLoading || authLoading}
-                >
-                  {isLoading || authLoading ? "Signing in..." : "Sign In"}
-                </Button>
-                <div className="text-center text-sm animate-fade-up">
-                  Don't have an account?{" "}
-                  <Link to="/register" className="text-primary hover:underline">
-                    Sign up
-                  </Link>
-                </div>
-              </CardFooter>
-            </form>
+            <CardContent className="space-y-4">
+              <DemoAccountSelector
+                selectedRole={selectedRole}
+                onRoleSelect={handleRoleSelect}
+                demoUsers={demoUsers}
+              />
+              
+              <LoginForm
+                onSubmit={handleSubmit}
+                formData={formData}
+                handleChange={handleChange}
+                errors={errors}
+                isLoading={isLoading || authLoading}
+              />
+            </CardContent>
           </Card>
         </div>
       </main>

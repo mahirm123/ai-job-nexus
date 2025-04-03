@@ -1,138 +1,19 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  LayoutDashboard, 
-  User, 
-  Briefcase, 
-  FileText, 
-  Bell, 
-  Settings, 
-  LogOut, 
-  Menu, 
-  MessageSquare,
-  Star,
-  Users,
-  Building,
-  BarChart3,
-  Shield,
-  ChevronRight,
-  Home
-} from "lucide-react";
+import { Menu, LogOut, Home, Briefcase, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Footer } from "@/components/layout/Footer";
+import { getNavItemsByRole } from "./DashboardNavItems";
+import MobileDashboardSidebar from "./MobileDashboardSidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
-
-// Navigation items based on user role
-const candidateNavItems = [
-  { 
-    name: "Dashboard", 
-    href: "/dashboard", 
-    icon: LayoutDashboard 
-  },
-  { 
-    name: "My Profile", 
-    href: "/dashboard/profile", 
-    icon: User 
-  },
-  { 
-    name: "Applications", 
-    href: "/dashboard/applications", 
-    icon: FileText 
-  },
-  { 
-    name: "Saved Jobs", 
-    href: "/dashboard/saved", 
-    icon: Star 
-  },
-  { 
-    name: "Messages", 
-    href: "/dashboard/messages", 
-    icon: MessageSquare 
-  },
-  { 
-    name: "Settings", 
-    href: "/dashboard/settings", 
-    icon: Settings 
-  },
-];
-
-const recruiterNavItems = [
-  { 
-    name: "Dashboard", 
-    href: "/dashboard/recruiter", 
-    icon: LayoutDashboard 
-  },
-  { 
-    name: "Job Postings", 
-    href: "/dashboard/jobs", 
-    icon: Briefcase 
-  },
-  { 
-    name: "Applicants", 
-    href: "/dashboard/applicants", 
-    icon: Users 
-  },
-  { 
-    name: "Messages", 
-    href: "/dashboard/messages", 
-    icon: MessageSquare 
-  },
-  { 
-    name: "Company Profile", 
-    href: "/dashboard/company", 
-    icon: Building 
-  },
-  { 
-    name: "Analytics", 
-    href: "/dashboard/analytics", 
-    icon: BarChart3 
-  },
-  { 
-    name: "Settings", 
-    href: "/dashboard/settings", 
-    icon: Settings 
-  },
-];
-
-const adminNavItems = [
-  { 
-    name: "Dashboard", 
-    href: "/dashboard/admin", 
-    icon: LayoutDashboard 
-  },
-  { 
-    name: "User Management", 
-    href: "/dashboard/users", 
-    icon: Users 
-  },
-  { 
-    name: "Companies", 
-    href: "/dashboard/companies", 
-    icon: Building 
-  },
-  { 
-    name: "Job Management", 
-    href: "/dashboard/jobs/manage", 
-    icon: Briefcase 
-  },
-  { 
-    name: "Analytics", 
-    href: "/dashboard/analytics", 
-    icon: BarChart3 
-  },
-  { 
-    name: "System Settings", 
-    href: "/dashboard/system", 
-    icon: Shield 
-  },
-];
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
@@ -140,12 +21,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   
-  // Determine navigation items based on user role
-  const navItems = user?.role === "admin" 
-    ? adminNavItems
-    : user?.role === "employer" 
-      ? recruiterNavItems
-      : candidateNavItems;
+  // Get navigation items based on user role
+  const navItems = getNavItemsByRole(user?.role);
   
   const handleLogout = () => {
     logout();
@@ -166,64 +43,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </Link>
         
         <div className="flex items-center gap-2">
-          <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-64 sm:max-w-sm">
-              <div className="flex flex-col h-full">
-                <div className="py-4">
-                  <Link to="/" className="flex items-center gap-2">
-                    <Briefcase className="h-6 w-6 text-primary" />
-                    <span className="font-bold">AI Job Nexus</span>
-                  </Link>
-                </div>
-                
-                <Separator />
-                
-                <div className="flex-1 overflow-auto py-4">
-                  <nav className="flex flex-col gap-1">
-                    {navItems.map((item) => {
-                      const isActive = location.pathname === item.href;
-                      return (
-                        <Link
-                          key={item.href}
-                          to={item.href}
-                          onClick={() => setIsMobileSidebarOpen(false)}
-                          className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                            isActive
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-secondary hover:text-secondary-foreground"
-                          }`}
-                        >
-                          <item.icon className="h-4 w-4" />
-                          {item.name}
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                </div>
-                
-                <Separator />
-                
-                <div className="py-4">
-                  <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </Button>
-                  <Link to="/" className="flex items-center gap-2 py-2 px-3 text-sm text-muted-foreground">
-                    <Home className="h-4 w-4" />
-                    Back to Home
-                  </Link>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={() => setIsMobileSidebarOpen(true)}>
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </SheetTrigger>
         </div>
       </header>
+      
+      {/* Mobile Sidebar */}
+      <MobileDashboardSidebar
+        navItems={navItems}
+        isOpen={isMobileSidebarOpen}
+        onOpenChange={setIsMobileSidebarOpen}
+        onLogout={handleLogout}
+        currentPath={location.pathname}
+      />
       
       <div className="flex flex-1">
         {/* Desktop Sidebar */}
