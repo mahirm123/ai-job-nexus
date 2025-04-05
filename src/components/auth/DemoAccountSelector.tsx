@@ -40,36 +40,38 @@ const DemoAccountSelector: React.FC<DemoAccountSelectorProps> = ({
       <p className="text-sm text-center text-muted-foreground">Select a demo account to try:</p>
       <div className="grid grid-cols-3 gap-2">
         {demoUsers.map((demoUser) => (
-          <Dialog key={demoUser.role}>
-            <DialogTrigger asChild>
-              <Button
-                variant={selectedRole === demoUser.role ? "default" : "outline"}
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => onRoleSelect(demoUser.role)}
-              >
-                {getRoleIcon(demoUser.role)}
-                {demoUser.role.charAt(0).toUpperCase() + demoUser.role.slice(1)}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium">Demo {demoUser.role} Account</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Email: {demoUser.email}<br />
-                    Password: {demoUser.password}
-                  </p>
-                </div>
-                <Button 
-                  className="w-full" 
+          <div key={demoUser.role}>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant={selectedRole === demoUser.role ? "default" : "outline"}
+                  size="sm"
+                  className="w-full justify-start"
                   onClick={() => onRoleSelect(demoUser.role)}
                 >
-                  Use these credentials
+                  {getRoleIcon(demoUser.role)}
+                  {demoUser.role.charAt(0).toUpperCase() + demoUser.role.slice(1)}
                 </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-medium">Demo {demoUser.role} Account</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Email: {demoUser.email}<br />
+                      Password: {demoUser.password}
+                    </p>
+                  </div>
+                  <Button 
+                    className="w-full" 
+                    onClick={() => onRoleSelect(demoUser.role)}
+                  >
+                    Use these credentials
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         ))}
       </div>
     </div>
