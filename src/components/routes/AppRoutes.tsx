@@ -33,6 +33,12 @@ import CompanyProfile from "@/pages/dashboard/CompanyProfile";
 import Analytics from "@/pages/dashboard/Analytics";
 import Settings from "@/pages/dashboard/Settings";
 
+// Admin Dashboard Pages
+import UserManagement from "@/pages/dashboard/UserManagement";
+import CompaniesManagement from "@/pages/dashboard/CompaniesManagement";
+import JobManagement from "@/pages/dashboard/JobManagement";
+import SystemSettings from "@/pages/dashboard/SystemSettings";
+
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -160,6 +166,26 @@ const AppRoutes = () => {
       <Route path="/dashboard/admin" element={
         <RoleProtectedRoute allowedRoles={['admin']}>
           <AdminDashboard />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/users" element={
+        <RoleProtectedRoute allowedRoles={['admin']}>
+          <UserManagement />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/companies" element={
+        <RoleProtectedRoute allowedRoles={['admin']}>
+          <CompaniesManagement />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/jobs/manage" element={
+        <RoleProtectedRoute allowedRoles={['admin']}>
+          <JobManagement />
+        </RoleProtectedRoute>
+      } />
+      <Route path="/dashboard/system" element={
+        <RoleProtectedRoute allowedRoles={['admin']}>
+          <SystemSettings />
         </RoleProtectedRoute>
       } />
       
