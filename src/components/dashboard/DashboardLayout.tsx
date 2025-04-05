@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu, LogOut, Home, Briefcase, ChevronRight } from "lucide-react";
@@ -43,12 +43,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </Link>
         
         <div className="flex items-center gap-2">
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={() => setIsMobileSidebarOpen(true)}>
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </SheetTrigger>
+          <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+          </Sheet>
         </div>
       </header>
       
