@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Laptop, UserRound, Building, ShieldCheck } from "lucide-react";
 
 type DemoUser = {
@@ -54,9 +54,11 @@ const DemoAccountSelector: React.FC<DemoAccountSelectorProps> = ({
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Demo {demoUser.role} Account</DialogTitle>
+                </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-medium">Demo {demoUser.role} Account</h3>
                     <p className="text-sm text-muted-foreground">
                       Email: {demoUser.email}<br />
                       Password: {demoUser.password}
@@ -64,7 +66,11 @@ const DemoAccountSelector: React.FC<DemoAccountSelectorProps> = ({
                   </div>
                   <Button 
                     className="w-full" 
-                    onClick={() => onRoleSelect(demoUser.role)}
+                    onClick={() => {
+                      // Call onRoleSelect and then close dialog
+                      onRoleSelect(demoUser.role);
+                      // We don't need to manually close Dialog as it auto-closes on action
+                    }}
                   >
                     Use these credentials
                   </Button>
