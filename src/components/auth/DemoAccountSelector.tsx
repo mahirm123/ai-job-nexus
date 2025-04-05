@@ -1,13 +1,14 @@
 
 import React from "react";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Laptop, UserRound, Building, ShieldCheck } from "lucide-react";
 
-interface DemoUser {
+type DemoUser = {
   role: string;
   email: string;
   password: string;
-}
+};
 
 interface DemoAccountSelectorProps {
   selectedRole: string;
@@ -20,22 +21,57 @@ const DemoAccountSelector: React.FC<DemoAccountSelectorProps> = ({
   onRoleSelect,
   demoUsers
 }) => {
+  // Helper function to get role icon
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case "candidate":
+        return <UserRound className="h-5 w-5 mr-2" />;
+      case "employer":
+        return <Building className="h-5 w-5 mr-2" />;
+      case "admin":
+        return <ShieldCheck className="h-5 w-5 mr-2" />;
+      default:
+        return <Laptop className="h-5 w-5 mr-2" />;
+    }
+  };
+  
   return (
-    <div className="space-y-2 animate-fade-up">
-      <Label htmlFor="demo-select">Quick access with demo accounts</Label>
-      <Select value={selectedRole} onValueChange={onRoleSelect}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a demo account" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="candidate">Job Seeker (Candidate)</SelectItem>
-          <SelectItem value="employer">Recruiter (Employer)</SelectItem>
-          <SelectItem value="admin">Administrator</SelectItem>
-        </SelectContent>
-      </Select>
-      <p className="text-xs text-muted-foreground mt-1">
-        Select a role to auto-fill demo credentials
-      </p>
+    <div className="space-y-3 animate-fade-up">
+      <p className="text-sm text-center text-muted-foreground">Select a demo account to try:</p>
+      <div className="grid grid-cols-3 gap-2">
+        {demoUsers.map((demoUser) => (
+          <Dialog key={demoUser.role}>
+            <DialogTrigger asChild>
+              <Button
+                variant={selectedRole === demoUser.role ? "default" : "outline"}
+                size="sm"
+                className="w-full justify-start"
+                onClick={() => onRoleSelect(demoUser.role)}
+              >
+                {getRoleIcon(demoUser.role)}
+                {demoUser.role.charAt(0).toUpperCase() + demoUser.role.slice(1)}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium">Demo {demoUser.role} Account</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Email: {demoUser.email}<br />
+                    Password: {demoUser.password}
+                  </p>
+                </div>
+                <Button 
+                  className="w-full" 
+                  onClick={() => onRoleSelect(demoUser.role)}
+                >
+                  Use these credentials
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        ))}
+      </div>
     </div>
   );
 };
